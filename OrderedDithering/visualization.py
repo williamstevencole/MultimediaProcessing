@@ -2,11 +2,13 @@ from PIL import Image
 import numpy as np
 import ordered_dithering
 
+np.random.seed(42)
+
 height, width = 100,100
 
-#img = np.random.randint(0,255,(height,width), dtype=np.uint8)
+img = np.random.randint(0,255,(height,width), dtype=np.uint8)
 #img = np.zeros((height,width), dtype=np.uint8)
-img = np.full((height,width), 255, dtype=np.uint8)
+#img = np.full((height,width), 150, dtype=np.uint8)
 #img = np.full((height,width), 255, dtype=np.uint8)
 
 binary = ordered_dithering.order_dither(img,4)
