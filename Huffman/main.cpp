@@ -9,36 +9,38 @@ struct Node{
     Node *left;
     Node *right;
 
-    Node(char c, int freq){
+    Node(char charac, int freq){
+        character = charac;
         frequency = freq;
-        character = c;
         left = nullptr;
         right = nullptr;
-    }
+    };
 };
 
-bool compareNodes(const Node *l, const Node *r){
-    return l->frequency < r->frequency;
+bool compareNodes(const Node* left, const Node* right){
+    return left->frequency < right->frequency;
 }
 
-void generateCodes(Node *root, const std::string str, std::map<char, std::string> &code){
+void generateCodes(Node * root, std::string str, std::map<char, std::string>& codes){
     if(!root) return;
 
     if(!root->left && !root->right){
-        code[root->character] = str;
+        codes[root->character] = str;
     }
 
-    generateCodes(root->left, str + "0", code);
-    generateCodes(root->right, str + "1", code);  
+    generateCodes(root->left, str+"0", codes);
+    generateCodes(root->right, str+"1", codes);
 }
 
-void buildHuffmanTree(const std::string text){
+void buildHuffmanTree(std::string text){
     std::map<char, int> frequency;
-    for(char ch: text){
-        frequency[ch]++;
+
+    for(char c: text){
+        frequency[c]++;
     }
 
     std::list<Node*> nodes;
+
     for(auto pair: frequency){
         nodes.push_back(new Node(pair.first, pair.second));
     }
@@ -53,42 +55,40 @@ void buildHuffmanTree(const std::string text){
         nodes.pop_front();
 
         int sum = left->frequency + right->frequency;
-        Node *newNode = new Node('$', sum);
-        newNode->left = left;
-        newNode->right = right;
+        Node *top = new Node('$', sum);
+
+        top -> left = left;    
+        top -> right = right;
 
         bool inserted = false;
-        for(auto it = nodes.begin(); it != nodes.end(); ++it){
-            if((*it)->frequency >= newNode->frequency){
-                nodes.insert(it, newNode);
-                inserted = true;
+        for(auto it= nodes.begin(); it != nodes.end(); it++){
+            if((*it)->frequency >= sum){
+                inserted= true;
+                nodes.insert(it, top);
                 break;
             }
         }
 
         if(!inserted){
-            nodes.push_back(newNode);
+            nodes.push_back(top);
         }
     }
 
     Node *root = nodes.front();
-    std::map<char, std::string> huffmanCode;
-    generateCodes(root, "", huffmanCode);
+    std::map<char, std::string> huffmanCodes;
+    generateCodes(root, "", huffmanCodes);
 
-    for(auto pair: huffmanCode){
-        std::cout << pair.first << ": " << pair.second << std::endl;
+    std::cout << "Huffman codes: \n";
+    for(auto pair : huffmanCodes){
+        std::cout << pair.first << " " << pair.second << std::endl;
     }
+
+    std::cout << "original string: " << text << std::endl;
 
     std::string encodedString = "";
-    for(char ch: text){
-        encodedString += huffmanCode[ch];
+    for(auto ch: text){
+        encodedString+=huffmanCodes[ch];
     }
+    std::cout << "encoded string: " << encodedString << std::endl;
 
-    std::cout << "Encoded string:\n" << encodedString << std::endl;
-}
-
-int main(){
-    std::string text = "Abracadabra";
-    buildHuffmanTree(text);
-    return 0;
 }
