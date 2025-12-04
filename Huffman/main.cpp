@@ -1,7 +1,7 @@
 #include <vector>
 #include <iostream>
+#include <list>
 #include <map>
-#include <queue>
 #include <string>
 
 struct Node{
@@ -18,16 +18,15 @@ struct Node{
     }
 };
 
-struct Compare{
-    bool operator()(Node *l, Node *r){
-        return l->frequency > r->frequency;
-    }
-};
 
-void generateCodes(Node* root, std::string str, std::map<char, std::string> &code){
+bool compareNodes(Node *l, Node *r){
+    return l->frequency < r->frequency;
+}
+
+void generateCodes(Node *root, const std::string str, std::map<char, std::string> &code){
     if(!root) return;
 
-    if(!root->left && !root->right){
+    if(root->left == nullptr && root->right == nullptr){
         code[root->character] = str;
     }
 
@@ -36,58 +35,64 @@ void generateCodes(Node* root, std::string str, std::map<char, std::string> &cod
 }
 
 void buildHuffmanTree(std::string text){
-    // Count frequency of each character
     std::map<char, int> frequency;
     for(char ch: text){
         frequency[ch]++;
     }
-    
-    std::priority_queue <Node*, std::vector<Node*>, Compare> pq;
 
-    // Create a leaf node for each character and add it to the priority queue
+    std::list<Node*> nodes;
+
     for(auto pair: frequency){
-        pq.push(new Node(pair.first, pair.second));
+        nodes.push_back(new Node(pair.first, pair.second));
     }
 
-    while(pq.size() > 1){
-        Node *left = pq.top();
-        pq.pop();
+    nodes.sort(compareNodes);
 
-        Node *right = pq.top();
-        pq.pop();
+    while(nodes.size() > 1){
+        Node *left = nodes.front();
+        nodes.pop_front();
+
+        Node *right = nodes.front();
+        nodes.pop_front();
 
         int sum = left->frequency + right->frequency;
-        Node *top = new Node('$', sum);
+        Node *newNode = new Node('$', sum);
 
-        top->left = left;
-        top->right = right;
+        newNode->left = left;
+        newNode->right = right;
 
-        pq.push(top);
+        bool inserted = false;
+        for(auto it = nodes.begin(); it != nodes.end(); it++){
+            if((*it)->frequency >= sum){
+                nodes.insert(it, newNode);
+                inserted = true;
+                break;
+            }
+        }
+
+        if(!inserted){
+            nodes.push_back(newNode);
+        }
     }
 
-    Node *root = pq.top();
+    Node *root = nodes.front();
     std::map<char, std::string> huffmanCode;
     generateCodes(root, "", huffmanCode);
 
-    std::cout << "Huffman Codes:\n";
+    std::cout << "Huffman codes:\n";
     for(auto pair: huffmanCode){
         std::cout << pair.first << ": " << pair.second << "\n";
-    }
-
-    std::cout << "Original string: " << text << "\n";
-
+    
+    
     std::string encodedString = "";
     for(char ch: text){
         encodedString += huffmanCode[ch];
     }
-
-    std::cout << "Encodeds string: " << encodedString << "\n";
+    std::cout << "Encoded string:\n" << encodedString << "\n";
 }
 
-
-int main(){
-    std::string text = "BIG BOB BITES BANANAS";
+int main() {
+    std::string text = "huffman coding example";
     buildHuffmanTree(text);
-
     return 0;
 }
