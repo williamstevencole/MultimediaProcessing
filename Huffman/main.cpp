@@ -1,47 +1,44 @@
-#include <vector>
-#include <iostream>
 #include <list>
 #include <map>
 #include <string>
+#include <iostream>
 
 struct Node{
-    char character;
     int frequency;
-    Node* left;
-    Node* right;
+    char character;
+    Node *left;
+    Node *right;
 
-    Node(char ch, int freq){
-        character = ch;
+    Node(char c, int freq){
         frequency = freq;
+        character = c;
         left = nullptr;
         right = nullptr;
     }
 };
 
-
-bool compareNodes(Node *l, Node *r){
+bool compareNodes(const Node *l, const Node *r){
     return l->frequency < r->frequency;
 }
 
 void generateCodes(Node *root, const std::string str, std::map<char, std::string> &code){
     if(!root) return;
 
-    if(root->left == nullptr && root->right == nullptr){
+    if(!root->left && !root->right){
         code[root->character] = str;
     }
 
     generateCodes(root->left, str + "0", code);
-    generateCodes(root->right, str + "1", code);
+    generateCodes(root->right, str + "1", code);  
 }
 
-void buildHuffmanTree(std::string text){
+void buildHuffmanTree(const std::string text){
     std::map<char, int> frequency;
     for(char ch: text){
         frequency[ch]++;
     }
 
     std::list<Node*> nodes;
-
     for(auto pair: frequency){
         nodes.push_back(new Node(pair.first, pair.second));
     }
@@ -57,13 +54,12 @@ void buildHuffmanTree(std::string text){
 
         int sum = left->frequency + right->frequency;
         Node *newNode = new Node('$', sum);
-
         newNode->left = left;
         newNode->right = right;
 
         bool inserted = false;
-        for(auto it = nodes.begin(); it != nodes.end(); it++){
-            if((*it)->frequency >= sum){
+        for(auto it = nodes.begin(); it != nodes.end(); ++it){
+            if((*it)->frequency >= newNode->frequency){
                 nodes.insert(it, newNode);
                 inserted = true;
                 break;
@@ -79,20 +75,20 @@ void buildHuffmanTree(std::string text){
     std::map<char, std::string> huffmanCode;
     generateCodes(root, "", huffmanCode);
 
-    std::cout << "Huffman codes:\n";
     for(auto pair: huffmanCode){
-        std::cout << pair.first << ": " << pair.second << "\n";
-    
-    
+        std::cout << pair.first << ": " << pair.second << std::endl;
+    }
+
     std::string encodedString = "";
     for(char ch: text){
         encodedString += huffmanCode[ch];
     }
-    std::cout << "Encoded string:\n" << encodedString << "\n";
+
+    std::cout << "Encoded string:\n" << encodedString << std::endl;
 }
 
-int main() {
-    std::string text = "huffman coding example";
+int main(){
+    std::string text = "Abracadabra";
     buildHuffmanTree(text);
     return 0;
 }

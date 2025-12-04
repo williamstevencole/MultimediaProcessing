@@ -1,0 +1,26 @@
+digraph Abracadabra{
+    "cd(2)" -> "c(1)"; "cd(2)" -> "d(1)";
+
+    "bcd(4)" -> "b(2)"; "bcd(4)" -> "cd(2)";
+
+    "rbcd(6)" -> "bcd(4)"; "rbcd(5)" -> "r(2)";
+
+    "arbcd(11)" -> "rbcd(6)"; "arbcd(11)" -> "a(5)";
+
+}
+
+digraph Stress{
+    "re(2)" -> "r(1)"; "re(2)" -> "e(1)";
+
+    "tre(3)" -> "re(2)"; "tre(3)" -> "t(1)";
+
+    "tres(6)" -> "tre(3)"; "tres(6)" -> "s(3)";
+}
+
+digraph Mississippi{
+    "mp(3)" -> "m(1)"; "mp(3)" -> "p(2)";
+
+    "mpi(7)" -> "mp(3)"; "mpi(7)" -> "i(4)";
+
+    "mpis(11)" -> "mpi(7)"; "mpis(11)" -> "s(4)";
+}
